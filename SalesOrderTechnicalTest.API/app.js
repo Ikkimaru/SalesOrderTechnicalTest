@@ -5,11 +5,13 @@ const authRoutes = require('./routes/auth');
 const orderRoutes = require('./routes/orders');
 
 const app = express();
+const cors = require('cors');
 
 app.use(express.json());
 app.use(session({ secret: 'secret', resave: false, saveUninitialized: true }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(cors());
 
 app.use('/auth', authRoutes);
 app.use('/orders', orderRoutes);

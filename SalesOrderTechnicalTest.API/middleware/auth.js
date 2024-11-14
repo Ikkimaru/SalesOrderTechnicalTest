@@ -1,8 +1,21 @@
-function ensureAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
+const jwt = require('jsonwebtoken');
+
+// Middleware to verify the token
+function authenticateToken(req, res, next) {
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+
+    if (!token) {
+        return res.status(401).json({error: 'Access denied, no token provided'});
     }
-    res.status(401).send('Unauthorized');
+
+    jwt.verify(token, 'your-secret-key', (err, user) => {
+        if (err) {
+            return res.status(403).json({error: 'Invalid token'});
+        }
+
+        req.user = user; // Add the user information to the request object
+        next(); // Proceed to the next middleware or route handler
+    });
 }
 
 function ensureRole(role) {
@@ -14,4 +27,4 @@ function ensureRole(role) {
     };
 }
 
-module.exports = { ensureAuthenticated, ensureRole };
+module.exports = { authenticateToken, ensureRole };

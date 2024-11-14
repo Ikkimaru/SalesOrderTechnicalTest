@@ -1,5 +1,6 @@
 const express = require('express');
 const passport = require('passport');
+const jwt = require('jsonwebtoken');
 const UserService = require('../services/user.service');
 const router = express.Router();
 
@@ -34,7 +35,14 @@ router.post('/login', function(req, res, next) {
             }
 
             // Successful login, send back the user data or a success message
-            return res.json({ message: 'Logged in successfully', user });
+            const token = jwt.sign(
+                { id: req.user.id, username: req.user.username }, // payload
+                'your-secret-key', // secret key (should be stored in a secure location)
+                { expiresIn: '1h' } // token expiration time (optional)
+            );
+
+            // Send the token in the response
+            res.json({ message: 'Login successful', token });
         });
     })(req, res, next);
 });
