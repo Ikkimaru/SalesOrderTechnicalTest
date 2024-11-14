@@ -1,10 +1,10 @@
 const express = require('express');
-const { ensureAuthenticated, ensureRole } = require('../middleware/auth');
+const { authenticateToken, ensureRole } = require('../middleware/auth');
 const OrderService = require('../services/order.service');
 const router = express.Router();
 
 // View all orders - accessible to both roles
-router.get('/', ensureAuthenticated, async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
     try {
         const orders = await OrderService.getAllOrders();
         res.status(200).json(orders);
@@ -27,7 +27,7 @@ router.get('/:orderRef', async (req, res) => {
 });
 
 // Create order - accessible only to admin
-router.post('/', ensureAuthenticated, ensureRole('admin'), async (req, res) => {
+router.post('/', authenticateToken, ensureRole('admin'), async (req, res) => {
     const orderData = req.body;
 
     // Validate that orderData is an array
@@ -44,13 +44,13 @@ router.post('/', ensureAuthenticated, ensureRole('admin'), async (req, res) => {
 });
 
 // Update order - accessible only to admin
-router.put('/:id', ensureAuthenticated, ensureRole('admin'), (req, res) => {
+router.put('/:id', authenticateToken, ensureRole('admin'), (req, res) => {
     // Logic to update an order
     res.send('Order updated');
 });
 
 // Delete order - accessible only to admin
-router.delete('/:id', ensureAuthenticated, ensureRole('admin'), (req, res) => {
+router.delete('/:id', authenticateToken, ensureRole('admin'), (req, res) => {
     // Logic to delete an order
     res.send('Order deleted');
 });

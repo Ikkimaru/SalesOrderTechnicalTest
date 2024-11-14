@@ -1,0 +1,37 @@
+.orders-container {
+  padding: 20px;
+}
+
+.order-card {
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+}
+
+.order-lines-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.order-lines-table th,
+.order-lines-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.order-lines-table th {
+  background-color: #f2f2f2;
+  text-align: left;
+}
+
+.loading {
+  font-size: 1.2em;
+  color: #555;
+}
+
+.error {
+  color: red;
+  font-weight: bold;
+}
