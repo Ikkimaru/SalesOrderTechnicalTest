@@ -36,7 +36,7 @@ router.post('/login', function(req, res, next) {
 
             // Successful login, send back the user data or a success message
             const token = jwt.sign(
-                { id: req.user.id, username: req.user.username }, // payload
+                { id: req.user.id, username: req.user.username, role: req.user.role }, // payload
                 'your-secret-key', // secret key (should be stored in a secure location)
                 { expiresIn: '1h' } // token expiration time (optional)
             );

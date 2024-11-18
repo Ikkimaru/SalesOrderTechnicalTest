@@ -5,36 +5,30 @@ class OrderService {
     // Method to create a new order
     static async createOrder(orderData) {
         try {
-            const createdOrders = [];
+            // Create the order first
+            const createdOrder = await OrderRepository.createOrder(
+                orderData.orderRef,
+                orderData.orderDate,
+                orderData.currency,
+                orderData.shipDate,
+                orderData.categoryCode
+            );
 
-            // Iterate over the array of orders
-            for (const order of orderData) {
-                // Create the order first
-                const createdOrder = await OrderRepository.createOrder(
-                    order.orderRef,
-                    order.orderDate,
-                    order.currency,
-                    order.shipDate,
-                    order.categoryCode
+            // If there are lines, insert them into the order_lines table
+            if (orderData.lines && orderData.lines.length > 0) {
+                const createdOrderLines = await OrderLineRepository.createOrderLines(
+                    createdOrder.id,
+                    orderData.lines
                 );
-
-                // If there are lines, insert them into the order_lines table
-                if (order.lines && order.lines.length > 0) {
-                    const createdOrderLines = await OrderLineRepository.createOrderLines(
-                        createdOrder.id,
-                        order.lines
-                    );
-                    createdOrder.lines = createdOrderLines;  // Attach the order lines
-                }
-
-                createdOrders.push(createdOrder);  // Add the created order to the result array
+                createdOrder.lines = createdOrderLines;  // Attach the order lines
             }
 
-            return createdOrders;  // Return all the created orders
+            return createdOrder;  // Return the created order
         } catch (error) {
-            throw new Error('Error creating orders: ' + error.message);
+            throw new Error('Error creating order: ' + error.message);
         }
     }
+
 
     // Method to get all orders
     static async getAllOrders() {

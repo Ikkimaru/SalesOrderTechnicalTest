@@ -1,0 +1,112 @@
+<form #orderForm="ngForm" (ngSubmit)="onSubmit(orderForm)">
+  <!-- Order Reference -->
+  <div>
+    <label for="orderRef">Order Reference:</label>
+    <input id="orderRef" name="orderRef" [(ngModel)]="order.orderRef" required #orderRef="ngModel" />
+    <div *ngIf="orderRef.invalid && orderRef.touched" class="error">
+      Order Reference is required.
+    </div>
+  </div>
+
+  <!-- Order Date -->
+  <div>
+    <label for="orderDate">Order Date:</label>
+    <input
+      type="date"
+      id="orderDate"
+      [(ngModel)]="orderDate"
+      name="orderDate"
+      [max]="currentDate"
+      required #orderDateField="ngModel"
+    />
+    <div *ngIf="orderDateField.invalid && orderDateField.touched" class="error">
+      Order Date is required and cannot be in the future.
+    </div>
+  </div>
+
+  <!-- Currency -->
+  <div>
+    <label for="currency">Currency:</label>
+    <input id="currency" name="currency" [(ngModel)]="order.currency" required #currencyField="ngModel" />
+    <div *ngIf="currencyField.invalid && currencyField.touched" class="error">
+      Currency is required.
+    </div>
+  </div>
+
+  <!-- Ship Date -->
+  <div>
+    <label for="shipDate">Ship Date:</label>
+    <input
+      type="date"
+      id="shipDate"
+      [(ngModel)]="order.shipDate"
+      name="shipDate"
+      [min]="currentDate"
+      (change)="onShipDateChange()"
+      required #shipDateField="ngModel"
+    />
+    <div *ngIf="shipDateField.invalid && shipDateField.touched" class="error">
+      Ship Date is required and cannot be earlier than Order Date.
+    </div>
+  </div>
+
+  <!-- Category Code -->
+  <div>
+    <label for="categoryCode">Category Code:</label>
+    <select id="categoryCode" [(ngModel)]="order.categoryCode" name="categoryCode" required #categoryCodeField="ngModel">
+      <option value="B2B">B2B</option>
+      <option value="B2C">B2C</option>
+    </select>
+    <div *ngIf="categoryCodeField.invalid && categoryCodeField.touched" class="error">
+      Category Code is required.
+    </div>
+  </div>
+
+  <!-- Order Lines -->
+  <h3>Order Lines</h3>
+  <div *ngFor="let line of order.lines; index as i">
+    <p>
+      {{ line.sku }} - {{ line.qty }} - {{ line.desc }}
+      <button type="button" (click)="removeOrderLine(i)">Remove</button>
+    </p>
+  </div>
+
+  <!-- New Order Line -->
+  <div>
+    <label for="sku">SKU:</label>
+    <input id="sku" name="sku" [(ngModel)]="newLine.sku" #skuField="ngModel" />
+    <div *ngIf="skuField.invalid && skuField.touched" class="error">
+      SKU is required.
+    </div>
+  </div>
+  <div>
+    <label for="qty">Quantity:</label>
+    <input id="qty" name="qty" [(ngModel)]="newLine.qty" type="number" #qtyField="ngModel" />
+    <div *ngIf="qtyField.invalid && qtyField.touched" class="error">
+      Quantity is required and must be a number.
+    </div>
+  </div>
+  <div>
+    <label for="desc">Description:</label>
+    <input id="desc" name="desc" [(ngModel)]="newLine.desc" #descField="ngModel" />
+    <div *ngIf="descField.invalid && descField.touched" class="error">
+      Description is required.
+    </div>
+  </div>
+
+  <button type="button" (click)="addLine()">Add Line</button>
+
+  <!-- Submit Button -->
+  <button type="submit" [disabled]="orderForm.invalid">Submit Order</button>
+
+  <!-- Success or error message -->
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+  <div *ngIf="successMessage" class="success-message">
+    {{ successMessage }}
+  </div>
+
+  <!-- Back Button -->
+  <button (click)="onBack()">Back to Orders</button>
+</form>

@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-interface OrderLine {
+// For existing order lines (used in GET requests)
+export interface OrderLine {
   id: number;
   orderId: number;
   sku: string;
@@ -10,7 +11,15 @@ interface OrderLine {
   desc: string;
 }
 
-interface Order {
+// For creating new orders (used in POST requests)
+export interface NewOrderLine {
+  sku: string;
+  qty: number;
+  desc: string;
+}
+
+// For existing orders (used in GET requests)
+export interface Order {
   id: number;
   orderRef: string;
   orderDate: string;
@@ -19,6 +28,17 @@ interface Order {
   categoryCode: string;
   lines: OrderLine[];
 }
+
+// For creating new orders (used in POST requests)
+export interface NewOrder {
+  orderRef: string;
+  orderDate: string;
+  currency: string;
+  shipDate: string;
+  categoryCode: string;
+  lines: NewOrderLine[];
+}
+
 
 @Injectable({
   providedIn: 'root'
@@ -44,6 +64,14 @@ export class OrderService {
       return new Observable<Order[]>(); // Return an empty observable or handle the error as needed
     }
   }
+
+  addOrder(order: NewOrder): Observable<any> {
+    const token = localStorage.getItem('authToken'); // Retrieve token
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+console.log(order);
+    return this.http.post(`${this.apiUrl}orders`, order, { headers });
+  }
+
 
   // Utility function to check if the code is running in the browser
   private isBrowser(): boolean {

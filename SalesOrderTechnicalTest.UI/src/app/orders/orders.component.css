@@ -35,3 +35,23 @@
   color: red;
   font-weight: bold;
 }
+
+.add-order-link {
+  margin-bottom: 20px;
+  text-align: right;
+}
+
+.add-order-button {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  text-decoration: none;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.add-order-button:hover {
+  background-color: #45a049;
+}

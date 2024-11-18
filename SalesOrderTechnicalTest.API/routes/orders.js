@@ -28,18 +28,16 @@ router.get('/:orderRef', async (req, res) => {
 
 // Create order - accessible only to admin
 router.post('/', authenticateToken, ensureRole('admin'), async (req, res) => {
-    const orderData = req.body;
-
-    // Validate that orderData is an array
-    if (!Array.isArray(orderData)) {
-        return res.status(400).json({ error: 'Invalid data format: orderData must be an array' });
-    }
-
     try {
-        const createdOrders = await OrderService.createOrder(orderData);
-        res.status(201).json(createdOrders);
-    } catch (err) {
-        res.status(500).json({ error: 'Failed to create orders', details: err.message });
+        const orderData = req.body;
+
+        // Delegate to the service
+        const orderId = await OrderService.createOrder(orderData);
+
+        res.status(201).json({ message: 'Order created successfully', orderId });
+    } catch (error) {
+        console.error('Error creating order:', error);
+        res.status(500).json({ error: 'Failed to create order' });
     }
 });
 

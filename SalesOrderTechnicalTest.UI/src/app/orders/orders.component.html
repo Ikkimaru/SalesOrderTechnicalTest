@@ -1,6 +1,10 @@
 <div class="orders-container">
   <h2>All Orders</h2>
 
+  <div class="add-order-link">
+    <a routerLink="/add-order" class="add-order-button">Add New Order</a>
+  </div>
+
   <div *ngIf="isLoading" class="loading">
     Loading orders...
   </div>
@@ -37,4 +41,3 @@
     </div>
   </div>
 </div>
-
