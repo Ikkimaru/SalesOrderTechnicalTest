@@ -3,12 +3,9 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 // For existing order lines (used in GET requests)
-export interface OrderLine {
-  id: number;
-  orderId: number;
-  sku: string;
-  qty: number;
-  desc: string;
+export interface OrderLine extends NewOrderLine {
+  id: number;       // Unique identifier for the line
+  orderId: number;  // ID of the parent order
 }
 
 // For creating new orders (used in POST requests)
@@ -19,14 +16,9 @@ export interface NewOrderLine {
 }
 
 // For existing orders (used in GET requests)
-export interface Order {
-  id: number;
-  orderRef: string;
-  orderDate: string;
-  currency: string;
-  shipDate: string;
-  categoryCode: string;
-  lines: OrderLine[];
+export interface Order extends NewOrder {
+  id: number;            // Unique identifier for the order
+  lines: OrderLine[];    // Array of OrderLine
 }
 
 // For creating new orders (used in POST requests)
@@ -70,6 +62,30 @@ export class OrderService {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 console.log(order);
     return this.http.post(`${this.apiUrl}orders`, order, { headers });
+  }
+
+  getOrderById(id: string): Observable<Order> {
+    const token = this.isBrowser() ? localStorage.getItem('authToken') : null;
+
+    if (token) {
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+      return this.http.get<Order>(`${this.apiUrl}orders/${id}`, { headers });
+    } else {
+      console.error('No token found, please log in');
+      return new Observable<Order>(); // Return an empty observable or handle error appropriately
+    }
+  }
+
+  updateOrder(order: Order): Observable<any> {
+    const token = this.isBrowser() ? localStorage.getItem('authToken') : null;
+
+    if (token) {
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+      return this.http.put(`${this.apiUrl}orders/${order.id}`, order, { headers });
+    } else {
+      console.error('No token found, please log in');
+      return new Observable<any>(); // Return an empty observable or handle error appropriately
+    }
   }
 
 

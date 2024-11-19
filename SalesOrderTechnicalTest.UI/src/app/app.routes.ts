@@ -7,6 +7,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'orders', component: OrdersComponent },
   { path: 'add-order', component: AddOrderComponent },
+  { path: 'edit-order/:id', component: AddOrderComponent },
   { path: '', redirectTo: '/login', pathMatch: 'full' }, // Default route
   { path: '**', redirectTo: '/login' }
 ];

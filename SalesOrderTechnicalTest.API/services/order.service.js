@@ -36,8 +36,13 @@ class OrderService {
     }
 
     // Method to get an order by reference
-    static async getOrderByRef(orderRef) {
-        return await OrderRepository.getOrderByRef(orderRef);
+    static async getOrderByRef(id) {
+        return await OrderRepository.getOrderByRef(id);
+    }
+
+    // Method to update an order by reference
+    static async updateOrder(id, orderData) {
+        return await OrderRepository.updateOrder(id, orderData);
     }
 }
 

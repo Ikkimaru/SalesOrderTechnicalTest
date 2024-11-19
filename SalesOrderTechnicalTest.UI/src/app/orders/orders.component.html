@@ -1,7 +1,7 @@
 <div class="orders-container">
   <h2>All Orders</h2>
 
-  <div class="add-order-link">
+  <div class="add-order-link" *ngIf="isAdmin">
     <a routerLink="/add-order" class="add-order-button">Add New Order</a>
   </div>
 
@@ -16,6 +16,7 @@
   <div *ngIf="!isLoading && !errorMessage">
     <div *ngFor="let order of orders" class="order-card">
       <h3>Order Reference: {{ order.orderRef }}</h3>
+      <p><strong>Order ID:</strong> {{ order.id }}</p>
       <p><strong>Order Date:</strong> {{ order.orderDate }}</p>
       <p><strong>Currency:</strong> {{ order.currency }}</p>
       <p><strong>Ship Date:</strong> {{ order.shipDate }}</p>
@@ -38,6 +39,9 @@
         </tr>
         </tbody>
       </table>
+      <button *ngIf="isAdmin" (click)="updateOrder(order.id)" class="update-order-button">
+        Update Order
+      </button>
     </div>
   </div>
 </div>

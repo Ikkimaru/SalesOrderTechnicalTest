@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import {OrderService} from '../services/order.service';
+import { Router } from '@angular/router';
+import { jwtDecode } from 'jwt-decode';
+
 
 interface OrderLine {
   id: number;
@@ -33,8 +36,24 @@ export class OrdersComponent implements OnInit {
   orders: Order[] = [];
   isLoading: boolean = true;
   errorMessage: string = '';
+  isAdmin: boolean = false;
 
-  constructor(private orderService: OrderService) {}
+  constructor(private orderService: OrderService,private router: Router) {
+    this.checkAdminRole();
+  }
+
+  checkAdminRole(): void {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      try {
+        const decodedToken: any = jwtDecode(token);
+        this.isAdmin = decodedToken.role === 'admin';
+      } catch (error) {
+        console.error('Error decoding token:', error);
+        this.isAdmin = false;
+      }
+    }
+  }
 
   ngOnInit(): void {
     this.fetchOrders();
@@ -52,5 +71,9 @@ export class OrdersComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  updateOrder(orderId: number): void {
+    this.router.navigate(['/edit-order/' + orderId]);
   }
 }

@@ -1,3 +1,6 @@
+<h2 *ngIf="isEditMode">Edit Order</h2>
+<h2 *ngIf="!isEditMode">Add Order</h2>
+
 <form #orderForm="ngForm" (ngSubmit)="onSubmit(orderForm)">
   <!-- Order Reference -->
   <div>
@@ -97,7 +100,9 @@
   <button type="button" (click)="addLine()">Add Line</button>
 
   <!-- Submit Button -->
-  <button type="submit" [disabled]="orderForm.invalid">Submit Order</button>
+  <button type="submit" [disabled]="orderForm.invalid">
+    {{ isEditMode ? 'Update Order' : 'Submit Order' }}
+  </button>
 
   <!-- Success or error message -->
   <div *ngIf="errorMessage" class="error-message">

@@ -21,6 +21,82 @@ class OrderRepository {
         });
     }
 
+    // Method to update an order with lines
+    static async updateOrder(orderId, orderData) {
+        const {orderRef, orderDate, currency, shipDate, categoryCode, lines} = orderData;
+
+        return new Promise((resolve, reject) => {
+            // Begin a transaction to ensure atomicity
+            db.serialize(() => {
+                db.run('BEGIN TRANSACTION');
+
+                // Update the main order details
+                db.run(
+                    `UPDATE orders 
+                 SET orderRef = ?, orderDate = ?, currency = ?, shipDate = ?, categoryCode = ? 
+                 WHERE id = ?`,
+                    [orderRef, orderDate, currency, shipDate, categoryCode, orderId],
+                    function (err) {
+                        if (err) {
+                            db.run('ROLLBACK');
+                            return reject(err);
+                        }
+
+                        // Clear existing order lines
+                        db.run(
+                            `DELETE FROM order_lines WHERE orderId = ?`,
+                            [orderId],
+                            (err) => {
+                                if (err) {
+                                    db.run('ROLLBACK');
+                                    return reject(err);
+                                }
+
+                                // Insert updated order lines
+                                const insertLineStmt = db.prepare(
+                                    `INSERT INTO order_lines (orderId, sku, qty, desc) VALUES (?, ?, ?, ?)`
+                                );
+
+                                for (const line of lines) {
+                                    insertLineStmt.run(
+                                        [orderId, line.sku, line.qty, line.desc],
+                                        (err) => {
+                                            if (err) {
+                                                insertLineStmt.finalize();
+                                                db.run('ROLLBACK');
+                                                return reject(err);
+                                            }
+                                        }
+                                    );
+                                }
+
+                                insertLineStmt.finalize((err) => {
+                                    if (err) {
+                                        db.run('ROLLBACK');
+                                        return reject(err);
+                                    }
+
+                                    // Commit the transaction
+                                    db.run('COMMIT', (err) => {
+                                        if (err) {
+                                            return reject(err);
+                                        }
+
+                                        // Return the updated order as an OrderEntity instance
+                                        resolve(
+                                            new OrderEntity(orderId, orderRef, orderDate, currency, shipDate, categoryCode, lines)
+                                        );
+                                    });
+                                });
+                            }
+                        );
+                    }
+                );
+            });
+        });
+    }
+
+
     // Method to get all orders with their lines
     static async getAllOrders() {
         return new Promise((resolve, reject) => {
@@ -60,9 +136,9 @@ class OrderRepository {
 
 
     // Method to get an order by orderRef, including its lines
-    static async getOrderByRef(orderRef) {
+    static async getOrderByRef(id) {
         return new Promise((resolve, reject) => {
-            db.get(`SELECT * FROM orders WHERE orderRef = ?`, [orderRef], (err, row) => {
+            db.get(`SELECT * FROM orders WHERE id = ?`, [id], (err, row) => {
                 if (err) return reject(err);  // Handle any errors
 
                 if (row) {
